@@ -1,0 +1,207 @@
+//#1&&2************************************************
+
+interface Shape
+{
+    void input();
+    void area();
+}
+class Circle implements Shape
+{
+    int r = 0;
+    double pi = 3.14, ar = 0;
+    @Override
+    public void input()
+    {
+        r = 5;
+    }
+    @Override
+    public void area()
+    {
+        ar = pi * r * r;
+        System.out.println("Area of circle:"+ar);
+    }
+}
+class Rectangle extends Circle
+{
+    int l = 0, b = 0;
+    double ar;
+    public void input()
+    {
+        super.input();
+        l = 6;
+        b = 4;
+    }
+    public void area()
+    {
+        super.area();
+        ar = l * b;
+        System.out.println("Area of rectangle:"+ar);
+    }
+}
+public class Demo
+{
+    public static void main(String[] args)
+    {
+        Rectangle obj = new Rectangle();
+        obj.input();
+        obj.area();
+    }
+}
+
+//#3************************************************
+
+@Override
+public boolean equals(Object obj) {
+    if (obj == null) return false;
+    if (!(obj instanceof User
+        return false;
+    if (obj == this)
+        return true;
+    return this.getId() == ( ( User) obj).getId();
+}
+public class User {
+ private int id;
+ private String name;
+ private String email;
+ private String mobile;
+}
+
+public class HashcodeEquals {
+    public static void main(String[] args) {
+        User alex1 = new User(1, "Alex");
+        User alex2 = new User(1, "Alex");
+        System.out.println("alex1 hashcode = " + alex1.hashCode());
+        System.out.println("alex2 hashcode = " + alex2.hashCode());
+        System.out.println("Checking equality between alex1 and alex2 = " + alex1.equals(alex2));
+    }
+}
+
+//#4************************************************
+
+
+public abstract class Person {
+	
+	private String name;
+	private String gender;
+	
+	public Person(String nm, String gen){
+		this.name=nm;
+		this.gender=gen;
+	}
+	
+	//abstract method
+	public abstract void work();
+	
+	@Override
+	public String toString(){
+		return "Name="+this.name+"::Gender="+this.gender;
+	}
+
+	public void changeName(String newName) {
+		this.name = newName;
+	}	
+}
+
+public class Employee extends Person {
+	
+	private int empId;
+	
+	public Employee(String nm, String gen, int id) {
+		super(nm, gen);
+		this.empId=id;
+	}
+
+	@Override
+	public void work() {
+		if(empId == 0){
+			System.out.println("Not working");
+		}else{
+			System.out.println("Working as employee!!");
+		}
+	}
+	
+	public static void main(String args[]){
+		//coding in terms of abstract classes
+		Person student = new Employee("Dove","Female",0);
+		Person employee = new Employee("Pankaj","Male",123);
+		student.work();
+		employee.work();
+		//using method implemented in abstract class - inheritance
+		employee.changeName("Pankaj Kumar");
+		System.out.println(employee.toString());
+	}
+
+}
+
+
+//#5************************************************
+
+class Singleton 
+{ 
+    // static variable single_instance of type Singleton 
+    private static Singleton single_instance = null; 
+  
+    // variable of type String 
+    public String s; 
+  
+    // private constructor restricted to this class itself 
+    private Singleton() 
+    { 
+        s = "Hello I am a string part of Singleton class"; 
+    } 
+  
+    // static method to create instance of Singleton class 
+    public static Singleton getInstance() 
+    { 
+        if (single_instance == null) 
+            single_instance = new Singleton(); 
+  
+        return single_instance; 
+    } 
+} 
+  
+// Driver Class 
+class Main 
+{ 
+    public static void main(String args[]) 
+    { 
+        // instantiating Singleton class with variable x 
+        Singleton x = Singleton.getInstance(); 
+  
+        // instantiating Singleton class with variable y 
+        Singleton y = Singleton.getInstance(); 
+  
+        // instantiating Singleton class with variable z 
+        Singleton z = Singleton.getInstance(); 
+  
+        // changing variable of instance x 
+        x.s = (x.s).toUpperCase(); 
+  
+        System.out.println("String from x is " + x.s); 
+        System.out.println("String from y is " + y.s); 
+        System.out.println("String from z is " + z.s); 
+        System.out.println("\n"); 
+  
+        // changing variable of instance z 
+        z.s = (z.s).toLowerCase(); 
+  
+        System.out.println("String from x is " + x.s); 
+        System.out.println("String from y is " + y.s); 
+        System.out.println("String from z is " + z.s); 
+    } 
+} 
+
+In object-oriented programming, a singleton class is a class that can have only one object (an instance of the class) at a time.
+After first time, if we try to instantiate the Singleton class, the new variable also points to the first instance created. 
+So whatever modifications we do to any variable inside the class through any instance, 
+it affects the variable of the single instance created and is visible if we access that variable through any variable of that class type defined.
+To design a singleton class:
+Make constructor as private.
+Write a static method that has return type object of this singleton class. Here, the concept of Lazy initialization in used to write this static method.
+Normal class vs Singleton class: Difference in normal and singleton class in terms of instantiation is that, For normal class we use constructor, whereas for singleton class we use getInstance() method (Example code:I). In general, to avoid confusion we may also use the class name as method name while defining this method (Example code:II).
+
+//#6************************************************
+
+
+
+
