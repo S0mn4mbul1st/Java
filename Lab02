@@ -1,0 +1,619 @@
+package LAB2;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+
+interface IList<E> extends Iterable<E> 
+{
+	boolean add(E e); // add element to the end of list
+	void add(int index, E element) throws NoSuchElementException; // add element on position index
+	void clear(); // delete all elements
+	boolean contains(E element); // is list containing an element (equals())
+	E get(int index) throws NoSuchElementException; //get element from position
+	E set(int index, E element) throws NoSuchElementException; // set new value on position
+	int indexOf(E element); // where is element (equals())
+	boolean isEmpty(); 
+	Iterator<E> iterator();
+	ListIterator<E> listIterator() throws UnsupportedOperationException; // for ListIterator
+	E remove(int index) throws NoSuchElementException; // remove element from position index
+	boolean remove(E e); // remove element
+	int size();
+}
+
+class OneWayLinkedList<E> implements IList<E>
+{
+	private class Element
+	{
+		E object;
+		Element next=null;
+		public Element(E e) 
+		{
+			this.object=e;
+		}
+		public Element getNext() 
+		{
+			return next;
+		}
+		public E getValue()
+		{
+			return object;
+		}
+		public void setNext(Element next) 
+		{
+			 this.next = next;
+		}
+		public void setValue(E object) 
+		{
+			 this.object = object;
+		}
+	}	
+	Element sentinel;
+	
+	private class InnerIterator implements Iterator<E>
+	{	
+		private Element x;
+		
+		public InnerIterator() 
+		{
+			x=sentinel;
+		}
+		
+		@Override
+		public boolean hasNext() 
+		{
+			return x.getNext()!=null;
+		}
+		
+		@Override
+		public E next() 
+		{
+			x=x.getNext();
+			return x.getValue();
+		}
+		public Element getCurrent ()
+		{
+			return x;
+		}
+	}
+	
+	public OneWayLinkedList() 
+	{
+		sentinel=new Element(null);
+	}
+
+	@Override
+	public Iterator<E> iterator() 
+	{
+		return new InnerIterator();
+	}
+
+	@Override
+	public ListIterator<E> listIterator() 
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean add(E e) 
+	{
+		InnerIterator iter=new InnerIterator();
+		Element obj= new Element(e);
+		if (sentinel.getNext()==null)
+		{
+			sentinel.setNext(obj);
+			iter.next();
+		}
+		else
+		{
+			while (iter.hasNext())
+			{
+				iter.next();
+			}
+			iter.getCurrent().setNext(obj);
+		}
+		return true;
+	}
+
+	@Override
+	public void add(int index, E e) throws NoSuchElementException 
+	{
+		InnerIterator iter=new InnerIterator();
+		Element temp;
+		if (index>size())
+		{
+			throw new NoSuchElementException();
+		}
+		else if (isEmpty() || index==size())
+		{
+			add(e);
+		}
+		else
+		{
+			int count=0;
+			iter.next();
+			Element addE=new Element (e);
+			if (index==0)
+			{
+				temp=iter.getCurrent();
+				addE.setNext(temp);
+				sentinel.setNext(addE);
+			}
+			else
+			{
+				while (iter.hasNext())
+				{
+					if (count==(index-1))
+					{
+						temp=iter.getCurrent();
+						iter.next();
+						Element current = iter.getCurrent();
+						addE.setNext(current);
+						temp.setNext(addE);
+						break;
+					}
+					else
+					{
+						iter.next();
+						count++;
+					}	
+				}
+			}
+		}	
+	}
+
+	@Override
+	public void clear() 
+	{
+		sentinel.next=null;
+	}
+
+	@Override
+	public boolean contains(E element) 
+	{
+		InnerIterator iter=new InnerIterator();
+		while (iter.hasNext())
+		{
+		    if (iter.next().equals(element))
+		    {
+		    	return true;
+		    }
+		}
+		return false;
+	}
+
+	@Override
+	public E get(int index) throws NoSuchElementException 
+	{
+		InnerIterator iter=new InnerIterator();
+		E e = null;
+		int count=0;
+		while (iter.hasNext()) 
+		{
+				if (index==0)
+				{
+					e=sentinel.getNext().getValue();
+					return e;
+				}
+				else
+				{	
+					if (count==index)
+					{
+						e=iter.next();
+						return e;
+					}
+					else
+					{
+						iter.next();
+					}
+				}
+			count++;
+		}
+		throw new NoSuchElementException();
+	}
+
+	@Override
+	public E set(int index, E element) throws NoSuchElementException 
+	{
+		InnerIterator iter=new InnerIterator();
+		E e = null;
+		int count=0;
+		while (iter.hasNext()) 
+		{
+			if (count==index)
+			{
+				e=iter.next();
+				iter.getCurrent().setValue(element);
+				return e;
+			}
+			else
+			{
+				iter.next();
+			}
+			count++;
+		}
+		throw new NoSuchElementException();
+	}
+
+	@Override
+	public int indexOf(E element) 
+	{
+		InnerIterator iter=new InnerIterator();
+		int index=0;
+		while (iter.hasNext())
+		{
+			if (iter.next().equals(element))
+			{
+				return index;
+			}
+			index++;
+		}
+		return -1;
+	}
+
+	@Override
+	public boolean isEmpty() 
+	{
+		return sentinel.next==null;
+	}
+
+	@Override
+	public E remove(int index) throws NoSuchElementException 
+	{
+		InnerIterator iter=new InnerIterator();
+		E e = null;
+		int count=0;
+		if (size()==1)
+		{
+			e=iter.next();
+			clear();
+			return e;
+		}
+		else
+		{
+			while (iter.hasNext()) 
+			{
+				
+				if (index==0)
+				{
+						e=iter.next();
+						iter.next();
+						sentinel.setNext(iter.getCurrent());
+						return e;
+				}	
+				if (count==index)
+				{
+					if (index+1==size())
+					{
+						Element item=iter.getCurrent();
+						e=iter.next();
+						item.setNext(null);
+						return e;
+					}
+					else
+					{
+						Element temp=iter.getCurrent();
+						e=iter.next();
+						iter.next();
+						temp.setNext(iter.getCurrent());
+						return e;
+					}
+				}
+				else
+				{
+				iter.next();
+				count++;
+				}
+			}
+		}
+		throw new NoSuchElementException();
+	}
+
+	@Override
+	public boolean remove(E e) 
+	{
+		boolean done=false;
+		if (contains(e))
+		{
+			remove (indexOf(e));
+			done=true;
+		}
+		return done;
+	}
+
+	@Override
+	public int size() 
+	{
+		InnerIterator iter=new InnerIterator();
+		int count=0;
+		while(iter.hasNext())
+		{
+			count++;
+			iter.next();
+		}
+		return count;
+	}
+	// test line : link=a0 link=a1 link=a2 link=a3
+	public void deleteEven ()
+	{
+		InnerIterator iter=new InnerIterator();
+		int count=0;
+		//OneWayLinkedList<E> indexes=new OneWayLinkedList<E>();
+		while (iter.hasNext())
+		{
+			if (count==0)
+			{	
+				System.out.println("Removing index:"+count);
+				iter.next();
+				sentinel.setNext(iter.getCurrent().getNext());
+			}
+			if (count>0 && count%2==0)
+			{
+				System.out.println("Removing index:"+count);
+				Element temp=iter.getCurrent();
+				iter.next();
+				temp.setNext(iter.getCurrent().getNext());
+				//indexes.add(iter.next());
+			}
+			else
+			{
+				iter.next();
+			}
+			count++;
+		}
+		/*for (int x=0;x<indexes.size();x++)
+		{
+			this.remove(indexes.get(x));
+		}*/
+	}
+}
+
+class Link
+{	
+	public String ref;
+	public Link(String ref) 
+	{
+		this.ref=ref;
+	}
+	
+	@Override
+	public boolean equals(Object object) 
+	{
+		 if (!(object instanceof Link))
+		 {
+			 return false; 
+		 }
+		 else
+		 {
+			Link temp=(Link)object;
+			return temp.ref.equals(this.ref);
+		 }
+	}
+}
+
+class Document
+{
+	public String name;
+	public OneWayLinkedList<Link> links=new OneWayLinkedList<Link>();
+	
+	public Document(String name, Scanner scan) 
+	{
+			this.name=name;
+			load(scan);
+	}
+	
+	public void load(Scanner scan) 
+	{
+		String line;
+		do
+		{
+			line=scan.nextLine ();
+			String word[]=line.split(" ");
+			int num=word.length;
+			for (int x=0;x<num;x++)
+			{
+				String link[]=word[x].split("=");
+				if (link[0].equalsIgnoreCase("link")&& link.length==2)
+				{
+					if (correctLink(link[1]))
+					{
+						Link temp=new Link (link[1]);
+						links.add(temp);
+					}
+				}
+			}
+		}while (!line.equals("eod"));
+	}
+	
+	// accepted only small letters, capitalic letter, digits nad '_' (but not on the begin)
+	private static boolean correctLink(String link) 
+	{
+		if (Character.isLetter(link.charAt(0)))
+		{
+			if (link.matches("\\w+"))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString() 
+	{
+		String output="Document: ";
+		String cLink;
+		output=output+name;
+		for (int x=0; x<links.size();x++)
+		{
+			cLink=links.get(x).ref;
+			output=output+"\n"+cLink;
+		}
+		return output;
+	}
+}
+
+public class Main {
+
+	static Scanner scan; // for input stream
+	
+	public static void main(String[] args) 
+	{
+		System.out.println("START");
+		scan=new Scanner(System.in);
+		Document[] doc=null;
+		int currentDocNo=0;
+		int maxNo=-1;
+		boolean halt=false;
+		while(!halt) 
+		{
+			String line=scan.nextLine();
+			// empty line and comment line - read next line
+			if(line.length()==0 || line.charAt(0)=='#')
+				continue;
+			// copy line to output (it is easier to find a place of a mistake)
+			System.out.println("!"+line);
+			String word[]=line.split(" ");
+			// go n - start with array of the length n
+			if(word[0].equalsIgnoreCase("go") && word.length==2) 
+			{
+				maxNo=Integer.parseInt(word[1]);
+				doc = new Document[maxNo];
+				continue;
+			}
+			//ch - change index
+			if(word[0].equalsIgnoreCase("ch") && word.length==2) 
+			{
+				currentDocNo=Integer.parseInt(word[1]);
+				continue;
+			}
+
+			// ld documentName
+			if(word[0].equalsIgnoreCase("ld") && word.length==2) 
+			{
+				doc[currentDocNo]=new Document(word[1],scan);
+				continue;
+			}
+			// ha
+			if(word[0].equalsIgnoreCase("ha") && word.length==1) 
+			{
+				halt=true;
+				continue;
+			}
+			// clear
+			if(word[0].equalsIgnoreCase("clear") && word.length==1) 
+			{
+				doc[currentDocNo].links.clear();
+				continue;
+			}
+			if(word[0].equalsIgnoreCase("de") && word.length==1) 
+			{
+				doc[currentDocNo].links.deleteEven();
+				continue;
+			}
+			// show
+			if(word[0].equalsIgnoreCase("show") && word.length==1) 
+			{
+				System.out.println(doc[currentDocNo].toString());
+				continue;
+			}			
+			// size
+			if(word[0].equalsIgnoreCase("size") && word.length==1) 
+			{
+				System.out.println(doc[currentDocNo].links.size());
+				continue;
+			}			
+			// add str
+			if(word[0].equalsIgnoreCase("add") && word.length==2) 
+			{
+				System.out.println(doc[currentDocNo].links.add(new Link(word[1])));
+				continue;
+			}			
+			// addi index str
+			if(word[0].equalsIgnoreCase("addi") && word.length==3) 
+			{
+				int index=Integer.parseInt(word[1]);
+				try 
+				{
+					doc[currentDocNo].links.add(index, new Link(word[2]));
+				}
+				catch (NoSuchElementException e) 
+				{
+					System.out.println("error");
+				}
+				continue;
+			}			
+			// get index
+			if(word[0].equalsIgnoreCase("get") && word.length==2) 
+			{
+				int index=Integer.parseInt(word[1]);
+				try 
+				{
+					Link l=doc[currentDocNo].links.get(index);
+					System.out.println(l.ref);
+				}
+				catch(NoSuchElementException e) 
+				{
+					System.out.println("error");
+				}
+				continue;
+			}			
+			// set index str
+			if(word[0].equalsIgnoreCase("set") && word.length==3) 
+			{
+				int index=Integer.parseInt(word[1]);
+				try 
+				{
+					Link l=doc[currentDocNo].links.set(index,new Link(word[2]));
+					System.out.println(l.ref);
+				}
+				catch(NoSuchElementException e) 
+				{
+					System.out.println("error");
+				}
+				continue;
+			}			
+			// index str
+			if(word[0].equalsIgnoreCase("index") && word.length==2) 
+			{
+				int index=doc[currentDocNo].links.indexOf(new Link(word[1]));
+				System.out.println(index);
+				continue;
+			}	
+			// remi index
+			if(word[0].equalsIgnoreCase("remi") && word.length==2) 
+			{
+				int index=Integer.parseInt(word[1]);
+				try 
+				{
+					Link l=doc[currentDocNo].links.remove(index);
+					System.out.println(l.ref);
+				}
+				catch(NoSuchElementException e) 
+				{
+					System.out.println("error");
+				}
+				continue;
+			}	
+			// rem str
+			if(word[0].equalsIgnoreCase("rem") && word.length==2) 
+			{
+				System.out.println(doc[currentDocNo].links.remove(new Link(word[1])));
+				continue;
+			}				
+			System.out.println("Wrong command");			
+		}
+		System.out.println("END OF EXECUTION");
+		scan.close();
+	}
+}
+
+
